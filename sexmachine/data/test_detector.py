@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
-import detector as d
+import sexmachine.detector as d
 
 
 class TestDetector(unittest.TestCase):
