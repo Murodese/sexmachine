@@ -1,4 +1,4 @@
-mport os.path
+import os.path
 
 from codecs import open as copen
 from six import viewkeys
