@@ -1,7 +1,7 @@
 import os.path
 import codecs
-from .mapping import map_name
-
+from mapping import map_name
+import six
 
 class NoCountryError(Exception):
     """Raised when non-supported country is queried"""
@@ -11,7 +11,7 @@ class NoCountryError(Exception):
 class Detector:
     """Get gender by first name"""
 
-    COUNTRIES = u"""great_britain ireland usa italy malta portugal spain france
+    COUNTRIES = """great_britain ireland usa italy malta portugal spain france
                    belgium luxembourg the_netherlands east_frisia germany austria
                    swiss iceland denmark norway sweden finland estonia latvia
                    lithuania poland czech_republic slovakia hungary romania
@@ -23,7 +23,7 @@ class Detector:
 
     def __init__(self,
                  case_sensitive=True,
-                 unknown_value=u"andy"):
+                 unknown_value="andy"):
 
         """Creates a detector parsing given data file"""
         self.case_sensitive = case_sensitive
@@ -36,7 +36,7 @@ class Detector:
         with codecs.open(filename, encoding="iso8859-1") as f:
             for line in f:
                 if any(map(lambda c: 128 < ord(c) < 160, line)):
-                    line = line.encode("iso8859-1").decode("windows-1252")
+                    line = line
                 self._eat_name_line(line.strip())
 
     def _eat_name_line(self, line):
@@ -49,13 +49,13 @@ class Detector:
                 name = name.lower()
 
             if parts[0] == "M":
-                self._set(name, u"male", country_values)
+                self._set(name, "male", country_values)
             elif parts[0] == "1M" or parts[0] == "?M":
-                self._set(name, u"mostly_male", country_values)
+                self._set(name, "mostly_male", country_values)
             elif parts[0] == "F":
-                self._set(name, u"female", country_values)
+                self._set(name, "female", country_values)
             elif parts[0] == "1F" or parts[0] == "?F":
-                self._set(name, u"mostly_female", country_values)
+                self._set(name, "mostly_female", country_values)
             elif parts[0] == "?":
                 self._set(name, self.unknown_value, country_values)
             else:
@@ -77,13 +77,18 @@ class Detector:
             return self.unknown_value
 
         max_count, max_tie = (0, 0)
-        best = self.names[name].keys()[0]
+        best = [a for a in six.viewkeys(self.names[name])][0]
         for gender, country_values in self.names[name].items():
             count, tie = counter(country_values)
             if count > max_count or (count == max_count and tie > max_tie):
                 max_count, max_tie, best = count, tie, gender
 
         return best if max_count > 0 else self.unknown_value
+
+    def counter(self, country_values):
+        country_values = [ord(a) for a in country_values]  # map(ord, country_values.replace(" ", ""))
+        return (len(country_values),
+                sum(map(lambda c: c > 64 and c-55 or c-48, country_values)))
 
     def get_gender(self, name, country=None):
         """Returns best gender for the given name and country pair"""
@@ -93,11 +98,8 @@ class Detector:
         if name not in self.names:
             return self.unknown_value
         elif not country:
-            def counter(country_values):
-                country_values = map(ord, country_values.replace(" ", ""))
-                return (len(country_values),
-                        sum(map(lambda c: c > 64 and c-55 or c-48, country_values)))
-            return self._most_popular_gender(name, counter)
+
+            return self._most_popular_gender(name, self.counter)
         elif country in self.__class__.COUNTRIES:
             index = self.__class__.COUNTRIES.index(country)
             counter = lambda e: (ord(e[index])-32, 0)
