@@ -1,7 +1,9 @@
-import os.path
-import codecs
-from mapping import map_name
-import six
+mport os.path
+
+from codecs import open as copen
+from six import viewkeys
+
+from .mapping import map_name
 
 class NoCountryError(Exception):
     """Raised when non-supported country is queried"""
@@ -28,12 +30,15 @@ class Detector:
         """Creates a detector parsing given data file"""
         self.case_sensitive = case_sensitive
         self.unknown_value = unknown_value
-        self._parse(os.path.join(os.path.dirname(__file__), "data/nam_dict.txt"))
+        self._parse(os.path.join(os.path.dirname(__file__),
+                                 "data/nam_dict.txt"
+                                 )
+                    )
 
     def _parse(self, filename):
         """Opens data file and for each line, calls _eat_name_line"""
         self.names = {}
-        with codecs.open(filename, encoding="iso8859-1") as f:
+        with copen(filename, encoding="iso8859-1") as f:
             for line in f:
                 if any(map(lambda c: 128 < ord(c) < 160, line)):
                     line = line
@@ -65,7 +70,10 @@ class Detector:
         """Sets gender and relevant country values for names dictionary of detector"""
         if '+' in name:
             for replacement in ['', ' ', '-']:
-                self._set(name.replace('+', replacement), gender, country_values)
+                self._set(name.replace('+', replacement),
+                          gender,
+                          country_values
+                          )
         else:
             if name not in self.names:
                 self.names[name] = {}
@@ -77,7 +85,7 @@ class Detector:
             return self.unknown_value
 
         max_count, max_tie = (0, 0)
-        best = [a for a in six.viewkeys(self.names[name])][0]
+        best = [a for a in viewkeys(self.names[name])][0]
         for gender, country_values in self.names[name].items():
             count, tie = counter(country_values)
             if count > max_count or (count == max_count and tie > max_tie):
@@ -86,7 +94,7 @@ class Detector:
         return best if max_count > 0 else self.unknown_value
 
     def counter(self, country_values):
-        country_values = [ord(a) for a in country_values]  # map(ord, country_values.replace(" ", ""))
+        country_values = [ord(a) for a in country_values]
         return (len(country_values),
                 sum(map(lambda c: c > 64 and c-55 or c-48, country_values)))
 
