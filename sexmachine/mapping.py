@@ -1,3 +1,5 @@
+"""Mapper for special chars."""
+
 # -*- coding: utf-8 -*-
 import six
 mappings = ((256, ["<A/>"]),
@@ -71,6 +73,13 @@ mappings = ((256, ["<A/>"]),
 
 
 def map_name(u):
+    """Map a string.
+
+    Args:
+        u (''str''): string to convert.
+    Return:
+        Converted string.
+    """
     for code, patterns in mappings:
         for pattern in patterns:
 
