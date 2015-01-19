@@ -126,7 +126,7 @@ class Detector:
         return best if max_count > 0 else self.unknown_value
 
     def counter(self, country_values):
-        """Find the value for the contry values
+        """Find the value for the country values
 
         Args:
             country_values (''List of chars''):
