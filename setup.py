@@ -12,5 +12,5 @@ setup(
     license='GPLv3',
     description='Get the gender from first name.',
     long_description=open('README.rst').read(),
-    requires=['six' >= 1.9]
+    requires=['six (>=1.9)']
 )
