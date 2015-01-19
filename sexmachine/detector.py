@@ -18,13 +18,13 @@ class Detector:
     """Get gender by first name."""
 
     COUNTRIES = """great_britain ireland usa italy malta portugal spain france
-                   belgium luxembourg the_netherlands east_frisia germany austria
-                   swiss iceland denmark norway sweden finland estonia latvia
-                   lithuania poland czech_republic slovakia hungary romania
-                   bulgaria bosniaand croatia kosovo macedonia montenegro serbia
-                   slovenia albania greece russia belarus moldova ukraine armenia
-                   azerbaijan georgia the_stans turkey arabia israel china india
-                   japan korea vietnam other_countries
+                   belgium luxembourg the_netherlands east_frisia germany
+                   austria swiss iceland denmark norway sweden finland estonia
+                   latvia lithuania poland czech_republic slovakia hungary
+                   romania bulgaria bosniaand croatia kosovo macedonia
+                   montenegro serbia slovenia albania greece russia belarus
+                   moldova ukraine armenia azerbaijan georgia the_stans turkey
+                   arabia israel china india japan korea vietnam other_countries
                  """.split()
 
     def __init__(self,
